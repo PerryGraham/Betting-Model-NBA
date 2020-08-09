@@ -74,6 +74,10 @@ l1=[]
 wpc1=[]
 homerec1=[]
 roadrec1=[]
+ht_hw= []
+ht_aw=[]
+at_hw=[]
+at_aw=[]
 for ind in range(len(gamesdata)): #for every entry in games data, it matches the previously reported stats for the team, season, and date before current. 
     date = gamesdata["GAME_DATE_EST"][ind]
     seas = gamesdata["SEASON"][ind]
@@ -94,7 +98,7 @@ for ind in range(len(gamesdata)): #for every entry in games data, it matches the
     wpc1.append(temp5)
     homerec1.append(temp6)
     roadrec1.append(temp7)
-
+    
 #data is already matched in order of row, so just add the list as a column 
 gamesdata["cgp_away"] = g1
 gamesdata["wins_away"] = w1
@@ -102,6 +106,34 @@ gamesdata["losses_away"] = l1
 gamesdata["winpercen_away"] = wpc1
 gamesdata["homerecord_away"] = homerec1
 gamesdata["awayrecord_away"] = roadrec1
+
+# Splitting up the record column so that it is not a string, but rather 2 columns of ints
+for ind in range(len(gamesdata)):
+    hh1 = gamesdata["homerecord"][ind]
+    hh2 = hh1.split("-")
+    ht_hw.append(hh2[0])
+    #print (ht_hw)
+
+    ha1 = gamesdata["awayrecord"][ind]
+    ha2 = ha1.split("-")
+    ht_aw.append(ha2[0])
+
+    ah1 = gamesdata["homerecord_away"][ind]
+    ah2 = ah1.split("-")
+    at_hw.append(ah2[0])
+
+    aa1 = gamesdata["awayrecord_away"][ind]
+    aa2 = aa1.split("-")
+    at_aw.append(aa2[0])
+
+# Adding the new feature lists as columns
+gamesdata["hometeam-homewins"] = ht_hw
+gamesdata["hometeam-awaywins"] = ht_aw
+gamesdata["awayteam-homewins"] = at_hw
+gamesdata["awayteam-awaywins"] = at_aw
+
+# Drop old record columns 
+gamesdata = gamesdata.drop(columns=["homerecord","awayrecord","homerecord_away","awayrecord_away"])
 
 # Checked missing values, there are none
 #print (gamesdata.isnull().sum()) 
