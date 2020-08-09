@@ -32,7 +32,7 @@ recorddata = recorddata.loc[recorddata.SEASON_ID >= 2018]
 recorddata.sort_values(by=["SEASON_ID"])
 recorddata = recorddata.reset_index()
 
-# Matching data from rankings with the gamesdata file 
+# Matching data from rankings with the gamesdata file, addings all the home team stats 
 g=[]
 w=[]
 l=[]
@@ -44,9 +44,9 @@ for ind in range(len(gamesdata)): #for every entry in games data, it matches the
     seas = gamesdata["SEASON"][ind]
     hteam = gamesdata["HOME_TEAM_ID"][ind]
     temp1 = recorddata.loc[(recorddata.STANDINGSDATE < date) & (recorddata.SEASON_ID == seas) & (recorddata.TEAM_ID == hteam)]
-    if temp1.empty:
+    if temp1.empty: #first game of the season check
         temp2 = 0
-    else:
+    else: #not the first game of the season 
         temp2 = (temp1.iloc[0]["G"])
         temp3 = (temp1.iloc[0]["W"])
         temp4 = (temp1.iloc[0]["L"])
@@ -67,10 +67,46 @@ gamesdata["winpercent"] = wpc
 gamesdata["homerecord"] = homerec
 gamesdata["awayrecord"] = roadrec
 
+# Matching data from rankings with the gamesdata file, addings all the away team stats 
+g1=[]
+w1=[]
+l1=[]
+wpc1=[]
+homerec1=[]
+roadrec1=[]
+for ind in range(len(gamesdata)): #for every entry in games data, it matches the previously reported stats for the team, season, and date before current. 
+    date = gamesdata["GAME_DATE_EST"][ind]
+    seas = gamesdata["SEASON"][ind]
+    ateam = gamesdata["VISITOR_TEAM_ID"][ind]
+    temp1 = recorddata.loc[(recorddata.STANDINGSDATE < date) & (recorddata.SEASON_ID == seas) & (recorddata.TEAM_ID == ateam)]
+    if temp1.empty: #first games of the seasons 
+        temp2 = 0
+    else: #every other game
+        temp2 = (temp1.iloc[0]["G"])
+        temp3 = (temp1.iloc[0]["W"])
+        temp4 = (temp1.iloc[0]["L"])
+        temp5 = (temp1.iloc[0]["W_PCT"])
+        temp6 = (temp1.iloc[0]["HOME_RECORD"])
+        temp7 = (temp1.iloc[0]["ROAD_RECORD"])
+    g1.append(temp2) #appends all the wanted values to lists in order to put into the main dataset
+    w1.append(temp3)
+    l1.append(temp4)
+    wpc1.append(temp5)
+    homerec1.append(temp6)
+    roadrec1.append(temp7)
+
+#data is already matched in order of row, so just add the list as a column 
+gamesdata["cgp_away"] = g1
+gamesdata["wins_away"] = w1
+gamesdata["losses_away"] = l1
+gamesdata["winpercen_away"] = wpc1
+gamesdata["homerecord_away"] = homerec1
+gamesdata["awayrecord_away"] = roadrec1
+
 # Checked missing values, there are none
 #print (gamesdata.isnull().sum()) 
 #gamesdata.info()
 #print(gamesdata.columns)
 
 # Saved the new data file as 'cleandata.csv'
-gamesdata.to_csv(r'C:\git\free-money\data\cleandata.csv',index = False)
+gamesdata.to_csv(r'data\cleandata.csv',index = False)
