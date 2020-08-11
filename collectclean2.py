@@ -8,8 +8,12 @@ recorddata = pd.read_csv("data/ranking.csv")
 teamdata = pd.read_csv("data/teams.csv")
 
 # Adds the total points scored in a game to the end of the dataframe
+# This will be our y value 
 point_total = gamesdata.PTS_home + gamesdata.PTS_away
 gamesdata["point_total"] = point_total
+
+# Making a dataframe to fill in values for the first games of the 2018 season
+gamesdata2017 = gamesdata.loc[gamesdata.SEASON >= 2017]
 
 # Removing entries before 2018 season
 gamesdata = gamesdata.loc[gamesdata.SEASON >= 2018]
@@ -26,8 +30,9 @@ features_games = [
     "PTS_away",
     "point_total",
 ]
+
+gamesdata2017 = gamesdata2017[features_games].copy()
 gamesdata = gamesdata[features_games].copy()
-# print(gamesdata) -looks good
 
 features_record = [
     "TEAM_ID",
@@ -52,9 +57,8 @@ recorddata = recorddata.loc[recorddata.SEASON_ID >= 2018]
 recorddata.sort_values(by=["SEASON_ID"])
 recorddata = recorddata.reset_index()
 
-# Adding mean points scored at home games, for the home team in the past 10 games
-# If gamesplay this season < 10, take all that are there.
-# If its the first game of the season, add 0 to that column
+# Adding mean points scored for the home team in the past 10 games
+# If games played this season < 10, go to last season data
 avgppglast5_home = []  # ppg - points per game
 avgpalast5_home = []  # pa - points againts
 avgppglast5_away = []  # ppg - points per game
@@ -62,53 +66,52 @@ avgpalast5_away = []  # pa - points againts
 
 for ind in range(len(gamesdata)):
     date = gamesdata["GAME_DATE_EST"][ind]
-    seas = gamesdata["SEASON"][ind]
     hteam = gamesdata["HOME_TEAM_ID"][ind]
     # When they are the home team
     match_stats = gamesdata.loc[
-        (gamesdata.GAME_DATE_EST < date)
-        & (gamesdata.SEASON == seas)
-        & (gamesdata.HOME_TEAM_ID == hteam)
+        (gamesdata.GAME_DATE_EST < date) & (gamesdata.HOME_TEAM_ID == hteam)
     ]
     # When they are the visitor team
     match_stats_away = gamesdata.loc[
-        (gamesdata.GAME_DATE_EST < date)
-        & (gamesdata.SEASON == seas)
-        & (gamesdata.VISITOR_TEAM_ID == hteam)
+        (gamesdata.GAME_DATE_EST < date) & (gamesdata.VISITOR_TEAM_ID == hteam)
     ]
-    # match_stats - list of all previous games this season (datafrome)
-    if match_stats.empty:
-        avgppglast10val = 0
-        avgpalast10val = 0
+    # match_stats - list of all previous games (datafrome)
+
+    # First I check to see if there are no recorded games (first game of season)
+    if not match_stats.empty:
+        prevgamescount = len(match_stats.index) # How many games have been played 
+    if match_stats.empty or prevgamescount < 5: 
+        # If there are less than 5, then go back to the previous season and take the average 
+        lastseas = gamesdata2017.loc[
+            (gamesdata2017.GAME_DATE_EST < date) & (gamesdata2017.HOME_TEAM_ID == hteam)
+        ]
+        avgppglast10val = lastseas.PTS_home.mean(axis=0)
+        avgpalast10val = lastseas.PTS_away.mean(axis=0)
     else:
-        prevgamescount = len(match_stats.index) - 1
-        # prevgamescount - how many games have been played (-1 to get indexs) (int)
-        if prevgamescount + 1 < 5:
-            avgppglast10val = match_stats.PTS_home.mean(axis=0) # home team points for 
-            avgpalast10val = match_stats.PTS_away.mean(axis=0) #home team points ag
-        else:
-            only10 = match_stats.iloc[:5]
-            avgppglast10val = only10.PTS_home.mean(axis=0)
-            avgpalast10val = only10.PTS_away.mean(axis=0)
+        only10 = match_stats.iloc[:5]
+        avgppglast10val = only10.PTS_home.mean(axis=0)
+        avgpalast10val = only10.PTS_away.mean(axis=0)
+
     avgppglast5_home.append(avgppglast10val)
     avgpalast5_home.append(avgpalast10val)
-    # match_stats2 - list of all previous games this season (datafrome)
-    if match_stats_away.empty:
-        avgppglast10vala = 0
-        avgpalast10vala = 0
+
+    # Do the same thing but for when they are the away team
+    if not match_stats_away.empty:
+        prevgamescounta = len(match_stats_away.index)
+    if match_stats_away.empty or prevgamescounta < 5:
+        lastseasa = gamesdata2017.loc[
+            (gamesdata2017.GAME_DATE_EST < date) & (gamesdata2017.VISITOR_TEAM_ID == hteam)
+        ]
+        avgppglast10vala = lastseasa.PTS_away.mean(axis=0)
+        avgpalast10vala = lastseasa.PTS_home.mean(axis=0)
     else:
-        prevgamescounta = len(match_stats_away.index) - 1
-        # prevgamescounta - how many games have been played (-1 to get indexs) (int)
-        if prevgamescounta + 1 < 5:
-            avgppglast10vala = match_stats_away.PTS_away.mean(axis=0) #points per away game 
-            avgpalast10vala = match_stats_away.PTS_home.mean(axis=0) #points ag away team 
-        else:
-            only10a = match_stats_away.iloc[:5]
-            avgppglast10vala = only10a.PTS_away.mean(axis=0) #points per away game 
-            avgpalast10vala = only10a.PTS_home.mean(axis=0) #points ag away team 
+        only10 = match_stats_away.iloc[:5]
+        avgppglast10vala = only10.PTS_away.mean(axis=0)
+        avgpalast10vala = only10.PTS_home.mean(axis=0)
+
     avgppglast5_away.append(avgppglast10vala)
     avgpalast5_away.append(avgpalast10vala)
-    # print(prevgamelist)
+
     # avgppglast10val = statistics.mean(prevgamelist)
 
 gamesdata["avgppglast5_at_home"] = avgppglast5_home
@@ -116,6 +119,7 @@ gamesdata["avgpalast5_at_home"] = avgpalast5_home
 gamesdata["avgppglast5_at_away"] = avgppglast5_away
 gamesdata["avgpalast5_at_away"] = avgpalast5_away
 
+# Taking the average of the last 5 away games and 5 home games
 gamesdata["point_average_last10"] = (
     gamesdata["avgppglast5_at_home"] + gamesdata["avgppglast5_at_away"]
 ) / 2
@@ -123,10 +127,7 @@ gamesdata["point_againts_average_last10"] = (
     gamesdata["avgpalast5_at_home"] + gamesdata["avgpalast5_at_away"]
 ) / 2
 
-
-# Adding mean points scored at home games, for the home team in the past 10 games
-# If gamesplay this season < 10, take all that are there.
-# If its the first game of the season, add 0 to that column
+# Same as previous but now we do the away team in the matchup
 aavgppglast5_home = []  # ppg - points per game
 aavgpalast5_home = []  # pa - points againts
 aavgppglast5_away = []  # ppg - points per game
@@ -134,54 +135,48 @@ aavgpalast5_away = []  # pa - points againts
 
 for ind in range(len(gamesdata)):
     date = gamesdata["GAME_DATE_EST"][ind]
-    seas = gamesdata["SEASON"][ind]
     hteam = gamesdata["VISITOR_TEAM_ID"][ind]
-    # When they are the home team
+    
     match_stats = gamesdata.loc[
         (gamesdata.GAME_DATE_EST < date)
-        & (gamesdata.SEASON == seas)
         & (gamesdata.HOME_TEAM_ID == hteam)
     ]
-    # When they are the visitor team
+    
     match_stats_away = gamesdata.loc[
         (gamesdata.GAME_DATE_EST < date)
-        & (gamesdata.SEASON == seas)
         & (gamesdata.VISITOR_TEAM_ID == hteam)
     ]
-    # match_stats - list of all previous games this season (datafrome)
-    if match_stats.empty:
-        avgppglast10val = 0
-        avgpalast10val = 0
+   
+    if not match_stats.empty:
+        prevgamescount = len(match_stats.index)
+    if match_stats.empty or prevgamescount < 5:
+        lastseas = gamesdata2017.loc[
+            (gamesdata2017.GAME_DATE_EST < date) & (gamesdata2017.HOME_TEAM_ID == hteam)
+        ]
+        avgppglast10val = lastseas.PTS_home.mean(axis=0)
+        avgpalast10val = lastseas.PTS_away.mean(axis=0)
     else:
-        prevgamescount = len(match_stats.index) - 1
-        # prevgamescount - how many games have been played (-1 to get indexs) (int)
-        if prevgamescount + 1 < 5:
-            avgppglast10val = match_stats.PTS_home.mean(axis=0)
-            avgpalast10val = match_stats.PTS_away.mean(axis=0)
-        else:
-            only10 = match_stats.iloc[:5]
-            avgppglast10val = only10.PTS_home.mean(axis=0)
-            avgpalast10val = only10.PTS_away.mean(axis=0)
+        only10 = match_stats.iloc[:5]
+        avgppglast10val = only10.PTS_home.mean(axis=0)
+        avgpalast10val = only10.PTS_away.mean(axis=0)
+
     aavgppglast5_home.append(avgppglast10val)
     aavgpalast5_home.append(avgpalast10val)
-    # match_stats2 - list of all previous games this season (datafrome)
-    if match_stats_away.empty:
-        avgppglast10vala = 0
-        avgpalast10vala = 0
+    
+    if not match_stats_away.empty:
+        prevgamescounta = len(match_stats_away.index)
+    if match_stats_away.empty or prevgamescounta < 5:
+        lastseasa = gamesdata2017.loc[
+            (gamesdata2017.GAME_DATE_EST < date) & (gamesdata2017.VISITOR_TEAM_ID == hteam)
+        ]
+        avgppglast10vala = lastseasa.PTS_away.mean(axis=0)
+        avgpalast10vala = lastseasa.PTS_home.mean(axis=0)
     else:
-        prevgamescounta = len(match_stats_away.index) - 1
-        # prevgamescounta - how many games have been played (-1 to get indexs) (int)
-        if prevgamescounta + 1 < 5:
-            avgppglast10vala = match_stats_away.PTS_away.mean(axis=0)
-            avgpalast10vala = match_stats_away.PTS_home.mean(axis=0)
-        else:
-            only10a = match_stats_away.iloc[:5]
-            avgppglast10vala = only10a.PTS_away.mean(axis=0)
-            avgpalast10vala = only10a.PTS_home.mean(axis=0)
+        only10 = match_stats_away.iloc[:5]
+        avgppglast10vala = only10.PTS_away.mean(axis=0)
+        avgpalast10vala = only10.PTS_home.mean(axis=0)
     aavgppglast5_away.append(avgppglast10vala)
     aavgpalast5_away.append(avgpalast10vala)
-    # print(prevgamelist)
-    # avgppglast10val = statistics.mean(prevgamelist)
 
 gamesdata["aavgppglast5_at_home"] = aavgppglast5_home
 gamesdata["aavgpalast5_at_home"] = aavgpalast5_home
@@ -195,7 +190,7 @@ gamesdata["away_point_againts_average_last10"] = (
     gamesdata["aavgpalast5_at_home"] + gamesdata["aavgpalast5_at_away"]
 ) / 2
 
-
+#drop all the columns that were used to take 5 home - 5 away 
 gamesdata = gamesdata.drop(
     [
         "aavgppglast5_at_home",
@@ -210,7 +205,7 @@ gamesdata = gamesdata.drop(
     axis=1,
 )
 
-# Matching data from rankings with the gamesdata file, addings all the home team stats
+# Now add the current ranking of each team as featues 
 g = []
 w = []
 l = []
@@ -253,7 +248,7 @@ gamesdata["winpercent"] = wpc
 gamesdata["homerecord"] = homerec
 gamesdata["awayrecord"] = roadrec
 
-# Matching data from rankings with the gamesdata file, addings all the away team stats
+# Same as previous for the away team in the matchup
 g1 = []
 w1 = []
 l1 = []
@@ -266,7 +261,7 @@ at_hw = []
 at_aw = []
 for ind in range(
     len(gamesdata)
-):  # for every entry in games data, it matches the previously reported stats for the team, season, and date before current.
+):  
     date = gamesdata["GAME_DATE_EST"][ind]
     seas = gamesdata["SEASON"][ind]
     ateam = gamesdata["VISITOR_TEAM_ID"][ind]
@@ -275,9 +270,9 @@ for ind in range(
         & (recorddata.SEASON_ID == seas)
         & (recorddata.TEAM_ID == ateam)
     ]
-    if temp1.empty:  # first games of the seasons
+    if temp1.empty:  
         temp2 = 0
-    else:  # every other game
+    else:  
         temp2 = temp1.iloc[0]["G"]
         temp3 = temp1.iloc[0]["W"]
         temp4 = temp1.iloc[0]["L"]
@@ -286,7 +281,7 @@ for ind in range(
         temp7 = temp1.iloc[0]["ROAD_RECORD"]
     g1.append(
         temp2
-    )  # appends all the wanted values to lists in order to put into the main dataset
+    )  
     w1.append(temp3)
     l1.append(temp4)
     wpc1.append(temp5)
@@ -306,7 +301,6 @@ for ind in range(len(gamesdata)):
     hh1 = gamesdata["homerecord"][ind]
     hh2 = hh1.split("-")
     ht_hw.append(hh2[0])
-    # print (ht_hw)
 
     ha1 = gamesdata["awayrecord"][ind]
     ha2 = ha1.split("-")
@@ -329,8 +323,8 @@ gamesdata["awayteam-awaywins"] = at_aw
 # Since theses columns were made from a string, they need to be converted object -> int
 gamesdata["hometeam-homewins"] = gamesdata["hometeam-homewins"].astype(str).astype(int)
 gamesdata["hometeam-awaywins"] = gamesdata["hometeam-awaywins"].astype(str).astype(int)
-gamesdata["awayteam-homewins"] = gamesdata["awayteam-homewins"].astype(str).astype(int) 
-gamesdata["awayteam-awaywins"] = gamesdata["awayteam-awaywins"].astype(str).astype(int) 
+gamesdata["awayteam-homewins"] = gamesdata["awayteam-homewins"].astype(str).astype(int)
+gamesdata["awayteam-awaywins"] = gamesdata["awayteam-awaywins"].astype(str).astype(int)
 
 
 # Drop old record columns
@@ -338,12 +332,10 @@ gamesdata = gamesdata.drop(
     columns=["homerecord", "awayrecord", "homerecord_away", "awayrecord_away"]
 )
 
-# Label encoding team ids
-
 # Checked missing values, there are none
 # print (gamesdata.isnull().sum())
 # gamesdata.info()
-#print(gamesdata.dtypes)
+# print(gamesdata)
 
 # Saved the new data file as 'cleandata.csv'
 gamesdata.to_csv(r'data/cleandata.csv',index = False)
