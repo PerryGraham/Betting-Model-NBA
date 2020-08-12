@@ -1,7 +1,9 @@
-# free-money
+
+# This is a work in progress
+
 Sports betting predictive modelling project
 
-By: alden-august-wang & PerryGraham
+By: PerryGraham & alden-august-wang
 
 The initial purpose of this project is to predict the Over-Under of an NBA game. 
 
