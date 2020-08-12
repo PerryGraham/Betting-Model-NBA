@@ -88,7 +88,7 @@ for ind in range(len(gamesdata)):
         avgppglast10val = lastseas.PTS_home.mean(axis=0)
         avgpalast10val = lastseas.PTS_away.mean(axis=0)
     else:
-        only10 = match_stats.iloc[:5]
+        only10 = match_stats.iloc[:10]
         avgppglast10val = only10.PTS_home.mean(axis=0)
         avgpalast10val = only10.PTS_away.mean(axis=0)
 
@@ -106,7 +106,7 @@ for ind in range(len(gamesdata)):
         avgppglast10vala = lastseasa.PTS_away.mean(axis=0)
         avgpalast10vala = lastseasa.PTS_home.mean(axis=0)
     else:
-        only10 = match_stats_away.iloc[:5]
+        only10 = match_stats_away.iloc[:10]
         avgppglast10vala = only10.PTS_away.mean(axis=0)
         avgpalast10vala = only10.PTS_home.mean(axis=0)
 
@@ -155,7 +155,7 @@ for ind in range(len(gamesdata)):
         avgppglast10val = lastseas.PTS_home.mean(axis=0)
         avgpalast10val = lastseas.PTS_away.mean(axis=0)
     else:
-        only10 = match_stats.iloc[:5]
+        only10 = match_stats.iloc[:10]
         avgppglast10val = only10.PTS_home.mean(axis=0)
         avgpalast10val = only10.PTS_away.mean(axis=0)
 
@@ -172,7 +172,7 @@ for ind in range(len(gamesdata)):
         avgppglast10vala = lastseasa.PTS_away.mean(axis=0)
         avgpalast10vala = lastseasa.PTS_home.mean(axis=0)
     else:
-        only10 = match_stats_away.iloc[:5]
+        only10 = match_stats_away.iloc[:10]
         avgppglast10vala = only10.PTS_away.mean(axis=0)
         avgpalast10vala = only10.PTS_home.mean(axis=0)
     aavgppglast5_away.append(avgppglast10vala)
