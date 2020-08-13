@@ -40,10 +40,10 @@ for ind in range(len(gamesdata)):
         lastseas = gamesdata2017.loc[
             (gamesdata2017.GAME_DATE_EST < date) & (gamesdata2017.HOME_TEAM_ID == hteam)
         ]
-        lastseas10 = lastseas.iloc[:5]
+        lastseas10 = lastseas.iloc[:10]
         avglast5home = lastseas.point_total.mean(axis=0)
     else:
-        only5 = match_stats.iloc[:5]
+        only5 = match_stats.iloc[:10]
         avglast5home = only5.point_total.mean(axis=0)
 
     avgtotal_home.append(avglast5home)
@@ -56,10 +56,10 @@ for ind in range(len(gamesdata)):
         lastseas = gamesdata2017.loc[
             (gamesdata2017.GAME_DATE_EST < date) & (gamesdata2017.VISITOR_TEAM_ID == hteam)
         ]
-        lastseas10 = lastseas.iloc[:5]
+        lastseas10 = lastseas.iloc[:10]
         avglast5home = lastseas.point_total.mean(axis=0)
     else:
-        only5 = match_stats.iloc[:5]
+        only5 = match_stats.iloc[:10]
         avglast5home = only5.point_total.mean(axis=0)
 
     avgtotal_away.append(avglast5home)
@@ -92,10 +92,10 @@ for ind in range(len(gamesdata)):
         lastseas = gamesdata2017.loc[
             (gamesdata2017.GAME_DATE_EST < date) & (gamesdata2017.HOME_TEAM_ID == hteam)
         ]
-        lastseas10 = lastseas.iloc[:5]
+        lastseas10 = lastseas.iloc[:10]
         avglast5home = lastseas.point_total.mean(axis=0)
     else:
-        only5 = match_stats.iloc[:5]
+        only5 = match_stats.iloc[:10]
         avglast5home = only5.point_total.mean(axis=0)
 
     aavgtotal_home.append(avglast5home)
@@ -108,10 +108,10 @@ for ind in range(len(gamesdata)):
         lastseas = gamesdata2017.loc[
             (gamesdata2017.GAME_DATE_EST < date) & (gamesdata2017.VISITOR_TEAM_ID == hteam)
         ]
-        lastseas10 = lastseas.iloc[:5]
+        lastseas10 = lastseas.iloc[:10]
         avglast5home = lastseas.point_total.mean(axis=0)
     else:
-        only5 = match_stats.iloc[:5]
+        only5 = match_stats.iloc[:10]
         avglast5home = only5.point_total.mean(axis=0)
 
     aavgtotal_away.append(avglast5home)
