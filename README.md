@@ -1,6 +1,10 @@
 
 # This is a work in progress
 
+current best MAE is 16.35 with linearregression 
+
+0.093 on score function 
+
 Sports betting predictive modelling project
 
 By: PerryGraham & alden-august-wang
