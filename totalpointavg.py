@@ -2,11 +2,12 @@ import pandas as pd
 import numpy as np
 import statistics
 
-gamesdata = pd.read_csv("data/cleandata.csv")
+#READING CLEANDATA2
+gamesdata = pd.read_csv("data/cleandata2.csv")
 gamesdata2017 = pd.read_csv("data/games.csv")
 
 # For having data for first 5 games of 2018 season 
-gamesdata2017 = gamesdata2017.loc[gamesdata2017.SEASON >= 2017]
+gamesdata2017 = gamesdata2017.loc[gamesdata2017.SEASON >= 2010]
 
 pt = gamesdata2017.PTS_home + gamesdata2017.PTS_away
 gamesdata2017["point_total"] = pt
@@ -35,15 +36,15 @@ for ind in range(len(gamesdata)):
     # Home team 5 home games 
     if not match_stats.empty:
         prevgamescount = len(match_stats.index)  # How many games have been played
-    if match_stats.empty or prevgamescount < 5:
+    if match_stats.empty or prevgamescount < 25:
         # If there are less than 5, then go back to the previous season and take the average
         lastseas = gamesdata2017.loc[
             (gamesdata2017.GAME_DATE_EST < date) & (gamesdata2017.HOME_TEAM_ID == hteam)
         ]
-        lastseas10 = lastseas.iloc[:10]
+        lastseas10 = lastseas.iloc[:25]
         avglast5home = lastseas.point_total.mean(axis=0)
     else:
-        only5 = match_stats.iloc[:10]
+        only5 = match_stats.iloc[:25]
         avglast5home = only5.point_total.mean(axis=0)
 
     avgtotal_home.append(avglast5home)
@@ -51,15 +52,15 @@ for ind in range(len(gamesdata)):
     # Home team 5 away games
     if not match_stats_away.empty:
         prevgamescount = len(match_stats.index)  # How many games have been played
-    if match_stats_away.empty or prevgamescount < 5:
+    if match_stats_away.empty or prevgamescount < 25:
         # If there are less than 5, then go back to the previous season and take the average
         lastseas = gamesdata2017.loc[
             (gamesdata2017.GAME_DATE_EST < date) & (gamesdata2017.VISITOR_TEAM_ID == hteam)
         ]
-        lastseas10 = lastseas.iloc[:10]
+        lastseas10 = lastseas.iloc[:25]
         avglast5home = lastseas.point_total.mean(axis=0)
     else:
-        only5 = match_stats.iloc[:10]
+        only5 = match_stats.iloc[:25]
         avglast5home = only5.point_total.mean(axis=0)
 
     avgtotal_away.append(avglast5home)
@@ -87,15 +88,15 @@ for ind in range(len(gamesdata)):
     # Home team 5 home games 
     if not match_stats.empty:
         prevgamescount = len(match_stats.index)  # How many games have been played
-    if match_stats.empty or prevgamescount < 5:
+    if match_stats.empty or prevgamescount < 25:
         # If there are less than 5, then go back to the previous season and take the average
         lastseas = gamesdata2017.loc[
             (gamesdata2017.GAME_DATE_EST < date) & (gamesdata2017.HOME_TEAM_ID == hteam)
         ]
-        lastseas10 = lastseas.iloc[:10]
+        lastseas10 = lastseas.iloc[:25]
         avglast5home = lastseas.point_total.mean(axis=0)
     else:
-        only5 = match_stats.iloc[:10]
+        only5 = match_stats.iloc[:25]
         avglast5home = only5.point_total.mean(axis=0)
 
     aavgtotal_home.append(avglast5home)
@@ -103,15 +104,15 @@ for ind in range(len(gamesdata)):
     # Home team 5 away games
     if not match_stats_away.empty:
         prevgamescount = len(match_stats.index)  # How many games have been played
-    if match_stats_away.empty or prevgamescount < 5:
+    if match_stats_away.empty or prevgamescount < 25:
         # If there are less than 5, then go back to the previous season and take the average
         lastseas = gamesdata2017.loc[
             (gamesdata2017.GAME_DATE_EST < date) & (gamesdata2017.VISITOR_TEAM_ID == hteam)
         ]
-        lastseas10 = lastseas.iloc[:10]
+        lastseas10 = lastseas.iloc[:25]
         avglast5home = lastseas.point_total.mean(axis=0)
     else:
-        only5 = match_stats.iloc[:10]
+        only5 = match_stats.iloc[:25]
         avglast5home = only5.point_total.mean(axis=0)
 
     aavgtotal_away.append(avglast5home)
@@ -127,7 +128,7 @@ mean = ((gamesdata.avgpointtotal_away + gamesdata.avgpointtotal_home) / 2)
 gamesdata["meanpointtotal"] = mean 
 
 #print(gamesdata)
-gamesdata.to_csv(r"data/cleandata.csv", index=False)
+gamesdata.to_csv(r"data/cleandata2.csv", index=False)
 print("done")
 
 
