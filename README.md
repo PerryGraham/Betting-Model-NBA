@@ -1,7 +1,7 @@
 
 # This is a work in progress
 
-current best MAE is ~14.70 with XGBoost
+current best MAE is ~14.53 with XGBoost
 
 Sports betting predictive modelling project
 
