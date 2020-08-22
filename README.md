@@ -1,11 +1,11 @@
 
 # This is a work in progress
 
-current best MAE is ~14.53 with XGBoost
+current best MAE is ~15.00 with Lasso Regression
 
 Sports betting predictive modelling project
 
-By: PerryGraham & alden-august-wang
+By: PerryGraham
 
 The purpose of this project is to predict the Over-Under of an NBA game. 
 
