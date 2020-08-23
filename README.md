@@ -32,7 +32,7 @@ There is a lot of variance in the total points scored in a game that predicting 
 * I tried manually scaling all of the data to see if that would help get better result in any of the models
 # Model fitting:
 * The hyperoptimized XGBoost resgression model currently yields the most accurate results out of all the regression models that I have tried
-# Cross valiation:
+# Valiation:
 * The most ideal way of testing this data would be using a leave-one-out method, because this is how the model would operate in practice.
     * However, for simplicity reasons I chose to use a 90:10 (train:test) split with no shuffling. This should yield good enough testing scores. 
 # Results:
