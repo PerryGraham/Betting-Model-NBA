@@ -21,9 +21,9 @@ There is a lot of variance in the total points scored in a game that predicting 
 * One-hot encoded team IDs and label encoded Season 
 * Pre-processing and scaled 
 # Data insight:
-* Heat maps for correlations 
-![](https://imgur.com/a/5ayIlPD)
-![](https://imgur.com/a/9xTxO3r)
+* Heat maps for correlations   
+![](https://i.imgur.com/7LzJjOg.png)  
+![](https://i.imgur.com/jQJIIUh.png)
 # Feature engineering:
 * Added mean total points from previous 25 home and 25 away games for each team in the matchup as a column. 
     * Explored performing different variations of this feature; taking the difference, taking the mean, etc. 
@@ -31,12 +31,11 @@ There is a lot of variance in the total points scored in a game that predicting 
 * Then I tried using less features (only ones with high correlation with the target, this actually got worse results across all the model types)
 * I tried manually scaling all of the data to see if that would help get better result in any of the models
 # Model fitting:
-* The Lasso resgression model currently yields the most accurate results out of all the regression models that I have tried
-    * Its ability to handle highly correlated features make it the best for this data. 
+* The hyperoptimized XGBoost resgression model currently yields the most accurate results out of all the regression models that I have tried
 # Cross valiation:
 * The most ideal way of testing this data would be using a leave-one-out method, because this is how the model would operate in practice.
     * However, for simplicity reasons I chose to use a 90:10 (train:test) split with no shuffling. This should yield good enough testing scores. 
 # Results:
 * After scraping the betting lines history and calculationg their mean absolute error, they have a 13.4 over the past 10 years and 13.8 in the last 2 years. 
-* The most accurate model has a 15.9 mae. This is 11% better than guess the mean of the previous season and 16% worse than the betting lines accuracy. 
-![](https://imgur.com/a/Cu9ZsAm)
+* The most accurate model has a 15.70 mae. This is 12% better than guess the mean of the previous season and 15% worse than the betting lines accuracy.  
+![](https://i.imgur.com/x6kMLHt.png)
