@@ -2,7 +2,8 @@
 
 By: PerryGraham
 
-[Click here to view the notebook](https://github.com/PerryGraham/Betting-Model-NBA/blob/master/BettingModel.ipynb)
+[Click here to view the notebook in Kaggle](https://www.kaggle.com/perry613/nba-sports-betting-model)  
+'nba-sports-betting-model.ipynb' is the newset version. 
 
 Everything is explained in details within the notebook, I suggest looking there. Here is a brief summary: 
 
